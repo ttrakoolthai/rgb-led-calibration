@@ -1,67 +1,93 @@
-# rgbcal: RGB LED calibration tool
-Bart Massey 2024
+# RGB LED Calibration
 
-This tool is designed to find out a decent frame rate and
-maximum RGB component values to produce a white-looking RGB
-of reasonable brightness.
+**Author:** Tommy Trakoolthai
+**Assignment:** June 11, 2025
 
-See below for UI.
+---
 
-**XXX This tool is *mostly* finished! Please wire your
-hardware up (see below), finish it, comment it, and use it
-to find good values. Then document those values in this
-README.**
+## What I Did
 
-## Build and Run
+This project adjusts the brightness of the red, green, and blue LEDs on the MicroBit v2 to help calibrate them for a balanced white light. It uses an external rotary knob along with the MicroBit’s built-in buttons to control the settings:
+	•	Pressing Button A changes the blue brightness
+	•	Pressing Button B changes the green brightness
+	•	Pressing A and B together changes the red brightness
+	•	When no buttons are pressed, the rotary knob adjusts the frame rate
 
-Run with `cargo embed --release`. You'll need `cargo embed`, as
-`cargo run` / `probe-rs run` does not reliably maintain a
-connection for printing. See
-https://github.com/probe-rs/probe-rs/issues/1235 for the
-details.
+The MicroBit prints the current RGB values and frame rate to the terminal in order to monitor changes and fine tune the calibration.
+---
 
-## Wiring
+## Calibration Results
 
-Connect the RGB LED to the MB2 as follows:
+I tested many color combinations by adjusting the red, green, and blue levels. This included switching between full white (all colors on) and toggling individual colors on and off rapidly. The system handled these transitions reliably.
 
-* Red to P9 (GPIO1)
-* Green to P8 (GPIO2)
-* Blue to P16 (GPIO3)
-* Gnd to Gnd
+For nearly all tests, the frame rate remained steady at 160 FPS, which kept the LEDs looking smooth and consistent. In a few rare cases—especially when switching colors quickly—the frame rate briefly dropped to 10 FPS, but it always recovered without any lasting issues.
 
-Connect the potentiometer (knob) to the MB2 as follows:
+---
 
-* Pin 1 to Gnd
-* Pin 2 to P2
-* Pin 3 to +3.3V
+## Calibration Summary
 
-## UI
+  • A balanced white color was achieved with: red: 15, green: 15, blue: 15
+	•	The system maintained a stable frame rate of 160 FPS
+	•	Green and blue LEDs were active for approximately 94% of each frame
+	•	The output appeared bright and steady under normal use; only rapid color switching occasionally caused a brief flicker
 
-The knob controls the individual settings: frame rate and
-color levels. Which parameter the knob controls should be
-determined by which buttons are held. (Right now, the knob
-jus always controls Blue. You should see the color change
-from green to teal-blue as you turn the knob clockwise.)
+---
 
-* No buttons held: Change the frame rate in steps of 10
-  frames per second from 10..160.
-* A button held: Change the blue level from off to on over
-  16 steps.
-* B button held: Change the green level from off to on over
-  16 steps.
-* A+B buttons held: Change the red level from off to on over
-  16 steps.
+## Output Snippet
+```
+red: 15
+green: 15
+blue: 15
+frame rate: 160
 
-The "frame rate" (also known as the "refresh rate") is the
-time to scan out all three colors. (See the scanout code.)
-At 30 frames per second, every 1/30th of a second the LED
-should scan out all three colors. If the frame rate is too
-low, the LED will appear to "blink". If it is too high, it
-will eat CPU for no reason.
+red: 15
+green: 0
+blue: 15
+frame rate: 160
 
-I think the frame rate is probably set higher than it needs
-to be right now: it can be tuned lower.
+red: 15
+green: 15
+blue: 0
+frame rate: 160
 
-**LED Specifications**
+red: 0
+green: 15
+blue: 15
+frame rate: 160
 
-[LED Wiring Diagram](https://docs.sunfounder.com/projects/sf-components/en/latest/component_rgb_led.html#:~:text=We%20use%20the%20common%20cathode%20one.&text=An%20RGB%20LED%20has%204,%2C%20GND%2C%20Green%20and%20Blue)
+red: 15
+green: 15
+blue: 15
+frame rate: 10
+
+red: 15
+green: 15
+blue: 15
+frame rate: 160
+```
+
+---
+
+## Testing and Verification
+
+I used the RTT terminal to check that the RGB LED values and frame rate were updating correctly. Whenever I changed the buttons or the knob, the system printed the new values in real time. This let me confirm that:
+
+- Button A changed the blue brightness
+- Button B changed the green brightness
+- Pressing both buttons changed the red brightness
+- Turning the knob (with no buttons pressed) changed the frame rate
+
+---
+
+## Demo
+
+See PHOTO.jpg in the ZIP archive for a picture of the working setup, or check the video linked in VIDEO_LINK.txt.
+
+---
+
+## Attribution
+
+This project is based on code provided by Bart Massey, available at:
+https://github.com/pdx-cs-rust-embedded/hw-rgbcal-skeleton
+
+ChatGPT was used to help understand the code and to help clean up the wording used in documentation.
